@@ -1,0 +1,902 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..800&family=Inter:wght@400;500;600;700&display=swap');
+
+:root{
+  --espresso:#2B1B14;
+  --espresso-light:#4A3326;
+  --crema:#F6EEE1;
+  --crema-dim:#ECE2D1;
+  --card-bg:#FFFFFF;
+  --terracotta:#C1622D;
+  --terracotta-dark:#A24E22;
+  --moss:#5C6B47;
+  --rust:#9C3D2E;
+  --gold:#C99A3E;
+  --ink:#2B1B14;
+  --muted:#8A7A68;
+  --border:#E3D6C2;
+  --radius:16px;
+  --shadow:0 4px 16px rgba(43,27,20,0.08);
+  --font-display:'Fraunces', Georgia, serif;
+  --font-body:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+#rr-app *{ box-sizing:border-box; }
+#rr-app{
+  font-family:var(--font-body);
+  color:var(--ink);
+  max-width:760px;
+  margin:0 auto;
+}
+
+/* ---- header ---- */
+.rr-header{
+  background:linear-gradient(135deg, var(--espresso) 0%, var(--espresso-light) 100%);
+  color:var(--crema);
+  border-radius:var(--radius);
+  padding:26px 26px 22px;
+  box-shadow:var(--shadow);
+}
+.rr-brand-name{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:21px;
+  letter-spacing:0.3px;
+}
+.rr-brand-name span{ font-weight:400; opacity:0.82; font-size:17px; margin-left:6px; }
+.rr-brand-sub{ font-size:12.5px; color:rgba(246,238,225,0.62); margin-top:5px; }
+.rr-header-stats{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  margin-top:22px;
+  gap:18px;
+  flex-wrap:wrap;
+}
+.rr-countdown-num{ font-family:var(--font-display); font-weight:800; font-size:48px; line-height:1; }
+.rr-countdown-label{ font-size:12.5px; color:rgba(246,238,225,0.72); margin-top:3px; }
+.rr-countdown-date{
+  font-size:11.5px;
+  color:rgba(246,238,225,0.5);
+  margin-top:10px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.rr-countdown-date input[type=date]{
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.18);
+  color:var(--crema);
+  border-radius:6px;
+  padding:3px 6px;
+  font-size:12px;
+  font-family:var(--font-body);
+  color-scheme:dark;
+}
+.rr-cup-wrap{ text-align:center; flex-shrink:0; }
+.rr-cup-svg{ width:60px; height:78px; display:block; margin:0 auto; }
+.rr-cup-outline{ fill:rgba(255,255,255,0.05); stroke:rgba(246,238,225,0.4); stroke-width:2.5; }
+.rr-cup-lid{ fill:var(--crema); opacity:0.92; }
+.rr-cup-hole{ fill:var(--espresso); }
+.rr-cup-fill{ transition:y 0.6s ease, height 0.6s ease; }
+.rr-cup-crema{ opacity:0.9; transition:y 0.6s ease; }
+.rr-cup-pct{ font-family:var(--font-display); font-weight:700; font-size:18px; margin-top:6px; }
+.rr-cup-label{ font-size:10.5px; color:rgba(246,238,225,0.6); margin-top:1px; max-width:92px; line-height:1.3; }
+
+/* ---- categories ---- */
+.rr-categories{ display:flex; flex-direction:column; gap:14px; margin-top:18px; }
+.rr-card{ background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+.rr-card-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:15px 18px;
+  cursor:pointer;
+  user-select:none;
+  gap:12px;
+}
+.rr-card-title{ font-family:var(--font-display); font-weight:600; font-size:16px; color:var(--ink); }
+.rr-card-meta{ display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.rr-card-bar{ width:56px; height:6px; background:var(--crema-dim); border-radius:4px; overflow:hidden; }
+.rr-card-bar-fill{ height:100%; background:linear-gradient(90deg, var(--terracotta), var(--moss)); border-radius:4px; transition:width 0.4s ease; }
+.rr-card-frac{ font-size:12px; color:var(--muted); font-weight:600; min-width:28px; text-align:right; }
+.rr-chevron{ font-size:11px; color:var(--muted); transition:transform 0.25s ease; display:inline-block; }
+.rr-chevron.rr-collapsed{ transform:rotate(-90deg); }
+.rr-card-body{ padding:0 18px 14px; }
+.rr-card-body.rr-hidden{ display:none; }
+
+.rr-item{ display:flex; align-items:flex-start; gap:10px; padding:9px 0; border-top:1px solid var(--crema-dim); }
+.rr-item:first-child{ border-top:none; }
+.rr-status-btn{
+  width:21px; height:21px; flex-shrink:0; border-radius:50%;
+  border:2px solid var(--border); background:transparent; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; color:var(--card-bg); margin-top:2px; padding:0; line-height:1;
+}
+.rr-item.progress .rr-status-btn{ border-color:var(--terracotta); background:var(--terracotta); color:var(--crema); }
+.rr-item.done .rr-status-btn{ border-color:var(--moss); background:var(--moss); color:#fff; }
+.rr-item-text{ flex:1; min-width:0; }
+.rr-item-main{ font-size:14px; line-height:1.4; color:var(--ink); }
+.rr-item.done .rr-item-main{ color:var(--muted); text-decoration:line-through; }
+.rr-item-detail{ font-size:11.5px; color:var(--muted); margin-top:1px; line-height:1.3; }
+.rr-item-owner{ font-size:11px; color:var(--moss); margin-top:2px; cursor:pointer; display:inline-flex; align-items:center; gap:3px; }
+.rr-item-owner:hover{ text-decoration:underline; }
+.rr-item-owner-input{ font-size:11px; color:var(--moss); border:none; border-bottom:1px solid var(--moss); background:transparent; outline:none; width:180px; font-family:var(--font-body); padding:0; margin-top:2px; }
+.rr-del-btn{ background:none; border:none; color:var(--border); font-size:18px; cursor:pointer; padding:0 2px; line-height:1; flex-shrink:0; }
+.rr-del-btn:hover{ color:var(--rust); }
+
+.rr-add-row{ display:flex; gap:8px; margin-top:10px; }
+.rr-add-row input{
+  flex:1; border:1px solid var(--border); border-radius:8px; padding:8px 10px;
+  font-size:13.5px; font-family:var(--font-body); background:var(--crema); color:var(--ink);
+}
+.rr-add-row input:focus{ outline:none; border-color:var(--terracotta); }
+.rr-add-row button{ width:34px; border:none; border-radius:8px; background:var(--terracotta); color:#fff; font-size:18px; cursor:pointer; }
+.rr-add-row button:hover{ background:var(--terracotta-dark); }
+
+.rr-footer{ display:flex; align-items:center; justify-content:space-between; margin-top:16px; padding:0 4px 4px; font-size:11px; color:var(--muted); flex-wrap:wrap; gap:6px; }
+.rr-reset-btn{ background:none; border:none; color:var(--muted); text-decoration:underline; cursor:pointer; font-size:11px; padding:0; }
+.rr-reset-btn:hover{ color:var(--rust); }
+
+.rr-loading{ padding:40px; text-align:center; color:var(--muted); font-family:var(--font-display); font-size:15px; }
+
+/* ---- budget tracker ---- */
+.rr-budget-card{ background:var(--crema-dim); border:1px solid var(--border); border-radius:var(--radius); padding:20px 20px 18px; margin-top:18px; }
+.rr-budget-header{ display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:6px; }
+.rr-budget-title{ font-family:var(--font-display); font-weight:700; font-size:17px; color:var(--ink); }
+.rr-budget-subtitle{ font-size:11.5px; color:var(--muted); }
+.rr-budget-summary{ display:flex; align-items:baseline; gap:8px; margin-top:14px; flex-wrap:wrap; }
+.rr-budget-summary-num{ font-family:var(--font-display); font-weight:800; font-size:30px; color:var(--ink); }
+.rr-budget-summary-label{ font-size:12.5px; color:var(--muted); }
+.rr-budget-bar{ width:100%; height:8px; background:rgba(43,27,20,0.08); border-radius:5px; overflow:hidden; margin-top:8px; }
+.rr-budget-bar-total{ height:10px; margin-top:10px; }
+.rr-budget-bar-fill{ height:100%; background:linear-gradient(90deg, var(--terracotta), var(--gold)); border-radius:5px; transition:width 0.4s ease; }
+.rr-budget-bar-fill.rr-over{ background:linear-gradient(90deg, var(--rust), #7A2A1F); }
+.rr-budget-lines{ margin-top:16px; display:flex; flex-direction:column; gap:10px; }
+.rr-budget-line{ background:var(--card-bg); border:1px solid var(--border); border-radius:12px; padding:12px 14px; }
+.rr-budget-line-head{ cursor:pointer; user-select:none; }
+.rr-budget-line-top{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
+.rr-budget-line-label{ font-family:var(--font-display); font-weight:600; font-size:14px; color:var(--ink); }
+.rr-budget-line-amt{ font-size:12.5px; font-weight:600; color:var(--ink); white-space:nowrap; }
+.rr-budget-line-of{ font-weight:400; color:var(--muted); }
+.rr-budget-line-bottom{ display:flex; align-items:center; justify-content:space-between; margin-top:5px; }
+.rr-remaining-text{ font-size:11.5px; color:var(--moss); }
+.rr-over-text{ font-size:11.5px; color:var(--rust); font-weight:600; }
+.rr-budget-line-body{ margin-top:10px; padding-top:10px; border-top:1px solid var(--crema-dim); }
+.rr-budget-line-body.rr-hidden{ display:none; }
+.rr-expense-row{ display:flex; align-items:center; gap:8px; padding:5px 0; font-size:13px; border-top:1px solid var(--crema-dim); }
+.rr-expense-row:first-child{ border-top:none; }
+.rr-expense-desc{ flex:1; color:var(--ink); }
+.rr-expense-amt{ color:var(--muted); font-weight:600; white-space:nowrap; }
+.rr-expense-add-row{ display:flex; gap:6px; margin-top:8px; }
+.rr-expense-add-row input{ border:1px solid var(--border); border-radius:8px; padding:7px 9px; font-size:13px; font-family:var(--font-body); background:var(--crema); color:var(--ink); }
+.rr-expense-add-row input[data-exp-desc]{ flex:2; min-width:0; }
+.rr-expense-add-row input[data-exp-amt]{ flex:1; width:64px; }
+.rr-expense-add-row input:focus{ outline:none; border-color:var(--terracotta); }
+.rr-expense-add-row button{ width:32px; flex-shrink:0; border:none; border-radius:8px; background:var(--terracotta); color:#fff; font-size:16px; cursor:pointer; }
+.rr-expense-add-row button:hover{ background:var(--terracotta-dark); }
+
+/* ---- contacts section ---- */
+.rr-contacts-card{ background:var(--crema-dim); border:1px solid var(--border); border-radius:var(--radius); padding:20px 20px 18px; margin-top:18px; }
+.rr-contacts-title{ font-family:var(--font-display); font-weight:700; font-size:17px; color:var(--ink); margin-bottom:14px; }
+.rr-contacts-grid{ display:flex; flex-direction:column; gap:10px; }
+.rr-contact-row{ background:var(--card-bg); border:1px solid var(--border); border-radius:12px; padding:12px 14px; }
+.rr-contact-name{ font-family:var(--font-display); font-weight:700; font-size:14px; color:var(--ink); }
+.rr-contact-role{ font-size:11.5px; color:var(--terracotta); font-weight:600; margin-top:1px; }
+.rr-contact-links{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+.rr-contact-link{ font-size:12px; color:var(--moss); text-decoration:none; display:inline-flex; align-items:center; gap:3px; }
+.rr-contact-link:hover{ text-decoration:underline; }
+.rr-contact-note{ font-size:11px; color:var(--muted); margin-top:4px; line-height:1.4; }
+
+@media (max-width:480px){
+  .rr-countdown-num{ font-size:38px; }
+  .rr-brand-name{ font-size:18px; }
+  .rr-header{ padding:20px 18px 18px; }
+}
+</style>
+
+<div id="rr-app"><div class="rr-loading">Brewing your tracker…</div></div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'tracker-data';
+  const app = document.getElementById('rr-app');
+  let collapsed = {};
+
+  function defaultData(){
+    return {
+      targetOpenDate: '2026-09-01',
+      categories: [
+        { id:'permits', title:'Permits & Approvals', items:[
+          { id:'p1', text:'Summit County building dept — final approval', detail:'OBC 107.1 FULL APPROVAL — stamped 07/14/2026. Renovation can begin.', status:'done', owner:'Mark/DJ' },
+          { id:'p2', text:'Construction document set submitted', detail:'Hara Architects, filed 5/18/26', status:'done', owner:'' },
+          { id:'p3', text:'Gas company service request paperwork', detail:'Owner submits total load + pressure request', status:'done', owner:'Mark/DJ' },
+          { id:'p4', text:'Water dept. meter & backflow coordination', detail:'', status:'done', owner:'Mark/DJ' },
+          { id:'p5', text:'Final inspections scheduled', detail:'Building, electrical, plumbing, mechanical', status:'todo', owner:'GC' },
+          { id:'p6', text:'DBA registration', detail:'Trade name filed with Ohio Secretary of State — "Ridge & Roast Coffee Co."', status:'done', owner:'Mark/DJ' },
+          { id:'p7', text:'Interior renovation application — City of CF Planning Dept', detail:'Coordinate with Rob Kurtz, Planning Director', status:'todo', owner:'Mark/DJ/Rob Kurtz' },
+          { id:'p8', text:'Sign permit application — City of CF Planning Dept', detail:'Coordinate with Rob Kurtz, Planning Director', status:'todo', owner:'DJ/Rob Kurtz' },
+          { id:'p9', text:'CDBG Grant for Equipment — connect with Mary Spaugy', detail:'Matching equipment grant & working capital loans — City of CF. Contact: Peggy Szalay also involved.', status:'todo', owner:'DJ' }
+        ]},
+        { id:'construction', title:'Construction & Renovation', items:[
+          { id:'c1', text:'Demolition', detail:'Low wall, carpet/VCT, casework removal', status:'todo', owner:'GC' },
+          { id:'c2', text:'Drive-thru window install', detail:'Ready Access 65163301 — confirm final size with owner before ordering. GC: Jason Carr.', status:'todo', owner:'Jason Carr' },
+          { id:'c3', text:'Tankless water heater install', detail:'Navien NPE-240S2', status:'todo', owner:'GC/Plumber' },
+          { id:'c4', text:'Grease interceptor install', detail:'Schier GB1, 25 GPM, 90-day pump-out', status:'todo', owner:'GC/Plumber' },
+          { id:'c5', text:'Electrical panel rework', detail:'Reuse Panel A, add/reassign circuits', status:'todo', owner:'Jimmy Ornsby or John Walter' },
+          { id:'c6', text:'HVAC outside air duct + damper', detail:'Ties into existing furnace return', status:'todo', owner:'HVAC' },
+          { id:'c7', text:'Wireless lighting control install', detail:'Cooper Wavelinx Pro system', status:'todo', owner:'Electrician' },
+          { id:'c8', text:'Flooring install', detail:'LVP in main areas, VCT in dish area', status:'todo', owner:'Russ' },
+          { id:'c9', text:'Final punch-out walkthrough', detail:'', status:'todo', owner:'Mark/Jason Carr' },
+          { id:'c10', text:'Base cabinets delivered', detail:'Lumberjacks Kitchens & Baths, $3,436.86', status:'done', owner:'' }
+        ]},
+        { id:'design', title:'Design Decisions', items:[
+          { id:'d1', text:'Wall paint colors', detail:'SW 7646 First Star — selected', status:'done', owner:'Mark/Abi' },
+          { id:'d2', text:'LVP flooring style/color', detail:'Flint Oak 256 Mohawk — selected', status:'done', owner:'Mark/Abi' },
+          { id:'d3', text:'Furniture', detail:'Tables, chairs, stools for 33 seats', status:'todo', owner:'Mary Penney' },
+          { id:'d4', text:'Decor & branding elements', detail:'Still working on it', status:'todo', owner:'Mark/Abi/Mary Penney' },
+          { id:'d5', text:'Drive-thru window finish', detail:'Ready Access 65163301 — confirm size/style with architect', status:'todo', owner:'Mark/DJ/GC' },
+          { id:'d6', text:'Lighting control button labels', detail:'Engraving text for Wavelinx switches', status:'todo', owner:'Electrician/GC' },
+          { id:'d7', text:'Cabinet finish & style', detail:'Choice Essentials, Slate, partial overlay — chosen', status:'done', owner:'' },
+          { id:'d8', text:'Furniture design — Mary Penney', detail:'Designer needs Pinterest board + architect floor plans/color scheme from Abi to begin', status:'todo', owner:'Abi → Mary Penney' }
+        ]},
+        { id:'financing', title:'Financing', items:[
+          { id:'f1', text:'$150k promissory note — final signatures', detail:'Mike Scheetz, 8% interest-only, 12 mo', status:'done', owner:'Mark/DJ' },
+          { id:'f2', text:'Loan funds disbursed', detail:'', status:'done', owner:'Mike Scheetz' },
+          { id:'f3', text:'Track actual spend vs. budget', detail:'$150k uses-of-funds plan', status:'todo', owner:'Mark/DJ' }
+        ]},
+        { id:'equipment', title:'Equipment & Vendors', items:[
+          { id:'e1', text:'Espresso machine', detail:'La Marzocco Linea Classic, 2-Group — ordered via Albert/Akron Coffee Roasters', status:'done', owner:'DJ/Albert/Abi' },
+          { id:'e2', text:'Coffee brewer', detail:'Fetco CBS-1232 (Twin) — $1,339.00', status:'todo', owner:'DJ/Abi' },
+          { id:'e3', text:'Espresso grinder', detail:'Mahlkönig E65W GBS — $3,099.00 — ordered via Albert/Akron Coffee Roasters', status:'done', owner:'DJ/Albert/Abi' },
+          { id:'e4', text:'Second grinder', detail:'Estella Caffe ECEG26 — $599.00', status:'todo', owner:'DJ/Abi' },
+          { id:'e5', text:'Ice machine', detail:'Ice-O-Matic ICEU220HA — $2,915.00', status:'todo', owner:'DJ/Abi' },
+          { id:'e6', text:'Bakery display cases (×2)', detail:'Avantco BC-48-HC — $3,698.00 total', status:'todo', owner:'DJ/Abi' },
+          { id:'e7', text:'Undercounter fridges (×2)', detail:'Avantco UBB-48-HC — $2,298.00 total', status:'todo', owner:'DJ/Abi' },
+          { id:'e8', text:'POS system', detail:'Square', status:'todo', owner:'DJ/Abi' },
+          { id:'e9', text:'Convection oven', detail:'Waring WCO250X — $1,200.00', status:'todo', owner:'DJ/Abi' },
+          { id:'e10', text:'Akron Coffee Roasters — bean supplier', detail:'Albert (owner) — Abi to connect re: equipment order follow-up, bean delivery schedule, next steps. Timing TBD.', status:'todo', owner:'Mark/DJ/Abi' },
+          { id:'e11', text:'Confirm equipment delivery timelines', detail:'Check order confirmations for ship/delivery dates across all ordered equipment', status:'todo', owner:'Mark/DJ/Abi' },
+          { id:'e12', text:'Square POS — confirm lead time for delivery & install', detail:'Abi to contact Dakarai Penn (Square rep: dpenn@squareup.com) to confirm delivery and install timeline', status:'todo', owner:'Abi' }
+        ]},
+        marketingCategorySeed()
+      ],
+      budget: defaultBudget(),
+      contacts: defaultContacts()
+    };
+  }
+
+  function defaultContacts(){
+    return [
+      { id:'ct-mark',    name:'Mark Young',               role:'Co-Founder / COO',                               email:'myoungrealestate@gmail.com', phone:'330-289-9433', note:'Use ridgeandroast@gmail.com for R&R topics' },
+      { id:'ct-dj',      name:'Daniel Lung (DJ)',          role:'Co-Founder / CFO',                               email:'djlung14@gmail.com',          phone:'330-265-0557', note:'' },
+      { id:'ct-abi',     name:'Abi Stevens',               role:'General Manager',                                email:'abiswk@gmail.com',            phone:'330-999-1043', note:'Social media, menu, hiring, vendor coordination' },
+      { id:'ct-jon',     name:'Jonathan Morschl (Jon)',    role:'Project Architect — Hara Architects',            email:'jonmorschl@gmail.com',        phone:'330-554-6833', note:'Layout design, plan revisions, permit approvals' },
+      { id:'ct-jason',   name:'Jason Carr',                role:'General Contractor',                             email:'',                            phone:'330-962-5577', note:'' },
+      { id:'ct-robin',   name:'Robin Willis',              role:'Landlord — Willis Investment Company LLC',       email:'robin@willisinvestment.com',   phone:'330-807-0940', note:'' },
+      { id:'ct-pruett',  name:'J. Ryan Pruett, R.S.',      role:'Environmental Health Manager — Summit County Public Health', email:'rpruett@schd.org', phone:'330-808-6822', note:'Office: 330-926-5645 — Health Dept inspection required before opening' },
+      { id:'ct-albert',  name:'Albert Masco',              role:'Owner — Akron Coffee Roasters',                  email:'albert@akron.coffee',         phone:'330-608-0581', note:'Bean supplier; equipment order coordination' },
+      { id:'ct-dakarai', name:'Dakarai Penn',              role:'Square POS Representative',                      email:'dpenn@squareup.com',          phone:'',             note:'' },
+      { id:'ct-mpenney', name:'Mary Penney',               role:'Interior Designer / Furniture',                  email:'penneym2982@gmail.com',       phone:'330-515-0679', note:'Needs Pinterest board + architect plans from Abi' },
+      { id:'ct-kameron', name:'Kameron Rudd',              role:'Social Media & Website — Jubilee Digital Studio', email:'Jubileedigitalstudio.co@gmail.com', phone:'330-801-3540', note:'Handling social media, website design & maintenance. Contract pending sign-off.' },
+      { id:'ct-ryan',    name:'Ryan Andorka',              role:'Graphic Designer — Logo & Visual Storytelling',  email:'rjdork@gmail.com',            phone:'330-324-5613', note:'' },
+      { id:'ct-russ',    name:'Russ Stowe',                role:'Flooring Contractor',                            email:'russstowe@gmail.com',         phone:'330-805-5361', note:'' },
+      { id:'ct-carlee',  name:'Carlee',                    role:'Painter',                                        email:'',                            phone:'330-221-8994', note:'Selected paint: SW 7646 First Star' },
+      { id:'ct-spaugy',  name:'Mary E. Spaugy',            role:'Director, Community Development — City of Cuyahoga Falls', email:'spaugy@cityofcf.com', phone:'330-971-8137', note:'CIC application point of contact' },
+      { id:'ct-carrie',  name:'Carrie Snyder',             role:'Community Development — City of Cuyahoga Falls', email:'csnyder@cityofcf.com',        phone:'330-971-8135', note:'CIC application point of contact' },
+      { id:'ct-peggy',   name:'Peggy Szalay',              role:'CDBG Entitlement Administrator — City of Cuyahoga Falls', email:'szalaypl@cityofcf.com', phone:'330-971-8173', note:'Matching equipment grant & working capital loans' },
+      { id:'ct-rob',     name:'Robert Kurtz (Rob)',         role:'Planning Director — City of Cuyahoga Falls',    email:'kurtzrj@cityofcf.com',        phone:'330-971-8136', note:'Interior renovation application & sign permit' },
+      { id:'ct-rr',      name:'Ridge & Roast Coffee Co.',  role:'Internal Brand Account / Hiring Mailbox',        email:'ridgeandroast@gmail.com',     phone:'',             note:'Entity #5632263 — Use for hiring ads & brand asset storage' },
+      { id:'ct-sos',     name:'Ohio Secretary of State',   role:'Legal Registration / Business Filing',           email:'business@ohiosos.gov',        phone:'',             note:'' }
+    ];
+  }
+
+  function defaultBudget(){
+    return {
+      loanAmount: 150000,
+      lines: [
+        { id:'equipment', label:'Equipment', budgeted:29892, expenses:equipmentSeedExpenses() },
+        { id:'buildout', label:'Buildout', budgeted:75000, expenses:[
+          { id:'exp-cabinets', desc:'Base cabinets — Lumberjacks Kitchens & Baths (Choice Essentials, Slate)', amount:3436.86 }
+        ]},
+        { id:'furniture', label:'Furniture & Fixtures', budgeted:12500, expenses:[] },
+        { id:'inventory', label:'Inventory', budgeted:5000, expenses:[] },
+        { id:'training', label:'Training & Payroll', budgeted:7500, expenses:[] },
+        { id:'marketing', label:'Marketing', budgeted:3000, expenses:[] },
+        { id:'reserve', label:'Working Capital Reserve', budgeted:17108, expenses:[] }
+      ]
+    };
+  }
+
+  function equipmentSeedExpenses(){
+    return [
+      { id:'eq-brewer', desc:'Coffee brewer — Fetco CBS-1232 (Twin)', amount:1339.00 },
+      { id:'eq-esp-grinder', desc:'Espresso grinder — Mahlkönig E65W GBS', amount:3099.00 },
+      { id:'eq-2nd-grinder', desc:'Second grinder — Estella Caffe ECEG26', amount:599.00 },
+      { id:'eq-ice', desc:'Ice machine — Ice-O-Matic ICEU220HA', amount:2915.00 },
+      { id:'eq-bakery', desc:'Bakery display case — Avantco BC-48-HC (2 units)', amount:3698.00 },
+      { id:'eq-fridge', desc:'Undercounter fridge — Avantco UBB-48-HC (2 units)', amount:2298.00 }
+    ];
+  }
+
+  function ensureEquipmentSeed(){
+    const line = state.budget.lines.find(function(l){ return l.id === 'equipment'; });
+    if(!line) return false;
+    let changed = false;
+    equipmentSeedExpenses().forEach(function(seed){
+      const exists = line.expenses.some(function(e){ return e.id === seed.id; });
+      if(!exists){ line.expenses.push(seed); changed = true; }
+    });
+    return changed;
+  }
+
+  function applyEquipmentQtyUpdate(){
+    if(state.budget._qty2Applied) return false;
+    const line = state.budget.lines.find(function(l){ return l.id === 'equipment'; });
+    if(line){
+      const bakery = line.expenses.find(function(e){ return e.id === 'eq-bakery'; });
+      if(bakery){ bakery.desc = 'Bakery display case — Avantco BC-48-HC (2 units)'; bakery.amount = 3698.00; }
+      const fridge = line.expenses.find(function(e){ return e.id === 'eq-fridge'; });
+      if(fridge){ fridge.desc = 'Undercounter fridge — Avantco UBB-48-HC (2 units)'; fridge.amount = 2298.00; }
+    }
+    state.budget._qty2Applied = true;
+    return true;
+  }
+
+  function applyOwnerPhoneUpdates(){
+    if(state._ownerPhones) return false;
+    if(state.contacts){
+      state.contacts.forEach(function(c){
+        if(c.id === 'ct-mark') c.phone = '330-289-9433';
+        if(c.id === 'ct-dj')   c.phone = '330-265-0557';
+      });
+    }
+    state._ownerPhones = true;
+    return true;
+  }
+
+  function applyOpenDateUpdate(){
+    if(state._openDate1) return false;
+    state.targetOpenDate = '2026-09-01';
+    state._openDate1 = true;
+    return true;
+  }
+
+  function applyPhoneUpdates(){
+    if(state._phoneUpdate1) return false;
+    if(state.contacts){
+      state.contacts.forEach(function(c){
+        if(c.id === 'ct-rob')    c.phone = '330-971-8136';
+        if(c.id === 'ct-carrie') c.phone = '330-971-8135';
+        if(c.id === 'ct-ryan')   c.phone = '330-324-5613';
+      });
+    }
+    state._phoneUpdate1 = true;
+    return true;
+  }
+
+  function applyTitleAndItemUpdates(){
+    if(state._titleUpdate1) return false;
+    // Update contact titles
+    if(state.contacts){
+      state.contacts.forEach(function(c){
+        if(c.id === 'ct-mark') c.role = 'Co-Founder / COO';
+        if(c.id === 'ct-dj')   c.role = 'Co-Founder / CFO';
+      });
+    }
+    // Add new permit items
+    var permitCat = state.categories.find(function(c){ return c.id === 'permits'; });
+    if(permitCat){
+      if(!permitCat.items.find(function(i){ return i.id === 'p9'; })){
+        permitCat.items.push({ id:'p9', text:'CDBG Grant for Equipment — connect with Mary Spaugy', detail:'Matching equipment grant & working capital loans — City of CF. Contact: Peggy Szalay also involved.', status:'todo', owner:'DJ' });
+      }
+    }
+    // Add Square lead time task
+    var eqCat = state.categories.find(function(c){ return c.id === 'equipment'; });
+    if(eqCat){
+      if(!eqCat.items.find(function(i){ return i.id === 'e12'; })){
+        eqCat.items.push({ id:'e12', text:'Square POS — confirm lead time for delivery & install', detail:'Abi to contact Dakarai Penn (Square rep: dpenn@squareup.com) to confirm delivery and install timeline', status:'todo', owner:'Abi' });
+      }
+    }
+    state._titleUpdate1 = true;
+    return true;
+  }
+
+  function ensureContactsAndNewItems(){
+    if(state._contactsAdded) return false;
+    // Add contacts if missing
+    if(!state.contacts){ state.contacts = defaultContacts(); }
+    // Add new permit items if missing
+    var permitCat = state.categories.find(function(c){ return c.id === 'permits'; });
+    if(permitCat){
+      if(!permitCat.items.find(function(i){ return i.id === 'p7'; })){
+        permitCat.items.push({ id:'p7', text:'Interior renovation application — City of CF Planning Dept', detail:'Coordinate with Rob Kurtz, Planning Director', status:'todo', owner:'Mark/DJ/Rob Kurtz' });
+      }
+      if(!permitCat.items.find(function(i){ return i.id === 'p8'; })){
+        permitCat.items.push({ id:'p8', text:'Sign permit application — City of CF Planning Dept', detail:'Coordinate with Rob Kurtz, Planning Director', status:'todo', owner:'DJ/Rob Kurtz' });
+      }
+    }
+    state._contactsAdded = true;
+    return true;
+  }
+
+  function ensureOwnerFields(){
+    if(state._ownerFieldsAdded) return false;
+    const ownerMap = {
+      'p1':'Mark/DJ','p2':'','p3':'Mark/DJ','p4':'Mark/DJ','p5':'GC','p6':'Mark/DJ',
+      'c1':'GC','c2':'Jason Carr','c3':'GC/Plumber','c4':'GC/Plumber',
+      'c5':'Jimmy Ornsby or John Walter','c6':'HVAC','c7':'Electrician',
+      'c8':'Russ','c9':'Mark/Jason Carr','c10':'',
+      'd1':'Mark/Abi','d2':'Mark/Abi','d3':'Mary Penney','d4':'Mark/Abi/Mary Penney',
+      'd5':'Mark/DJ/GC','d6':'Electrician/GC','d7':'','d8':'Abi → Mary Penney',
+      'f1':'Mark/DJ','f2':'Mike Scheetz','f3':'Mark/DJ',
+      'e1':'DJ/Albert/Abi','e2':'DJ/Abi','e3':'DJ/Albert/Abi','e4':'DJ/Abi',
+      'e5':'DJ/Abi','e6':'DJ/Abi','e7':'DJ/Abi','e8':'DJ/Abi','e9':'DJ/Abi',
+      'e10':'Mark/DJ/Abi','e11':'Mark/DJ/Abi',
+      'mk1':'Abi/Mark/Kameron','mk2':'Abi/Mark/Kameron','mk3':'Abi',
+      'mk4':'Abi/Mark/DJ','mk5':'Mark/Abi/Steve Sheeks','mk6':'',
+      'mk7':'DJ/Rob Kurtz/Mary Spaugy','mk8':'Abi/Mark'
+    };
+    state.categories.forEach(function(cat){
+      cat.items.forEach(function(item){
+        if(item.owner === undefined){
+          item.owner = ownerMap[item.id] || '';
+        }
+      });
+    });
+    state._ownerFieldsAdded = true;
+    return true;
+  }
+
+  function applySpreadsheetUpdates(){
+    if(state._sheetUpdate1) return false;
+    const updates = {
+      'p3': { status:'done' },
+      'p4': { status:'done' },
+      'c2': { detail:'Ready Access 65163301 — confirm final size with owner before ordering. GC: Jason Carr.' },
+      'd1': { status:'done', detail:'SW 7646 First Star — selected' },
+      'd2': { status:'done', detail:'Flint Oak 256 Mohawk — selected' },
+      'd4': { detail:'Still working on it' },
+      'd5': { detail:'Ready Access 65163301 — confirm size/style with architect' },
+      'f1': { status:'done' },
+      'f2': { status:'done' },
+      'e1': { status:'done', detail:'La Marzocco Linea Classic, 2-Group — ordered via Albert/Akron Coffee Roasters' },
+      'e3': { status:'done', detail:'Mahlkönig E65W GBS — $3,099.00 — ordered via Albert/Akron Coffee Roasters' },
+      'e8': { detail:'Square' },
+      'e9': { detail:'Waring WCO250X — $1,200.00' },
+      'mk1': { status:'done', detail:'Handle: @ridgeandroastcoffee — FB and IG complete; TikTok still to-do' },
+      'mk2': { detail:'ridgeandroastcoffee.com — logo complete, design underway. Kameron sent contract — needs review and sign-off.' },
+      'mk4': { status:'done', detail:'~6 weeks before opening. County approval received 07/14/2026.' },
+      'mk5': { detail:'Stickers via stickermule.com + buttons, decals, tote bags, punch cards. Contact: Steve Sheeks.' }
+    };
+    state.categories.forEach(function(cat){
+      cat.items.forEach(function(item){
+        if(updates[item.id]){
+          Object.assign(item, updates[item.id]);
+        }
+      });
+    });
+    // Add new marketing items if missing
+    var mktCat = state.categories.find(function(c){ return c.id === 'marketing'; });
+    if(mktCat){
+      if(!mktCat.items.find(function(i){ return i.id === 'mk7'; })){
+        mktCat.items.push({ id:'mk7', text:'Order sign', detail:'FastSigns — coordinate with DJ, Rob Kurtz, Mary Spaugy', status:'todo' });
+      }
+      if(!mktCat.items.find(function(i){ return i.id === 'mk8'; })){
+        mktCat.items.push({ id:'mk8', text:'Summit County Health Dept — application & inspection', detail:'Owners: Abi & Mark. Required before opening.', status:'todo' });
+      }
+    }
+    state._sheetUpdate1 = true;
+    return true;
+  }
+
+  function applyPermitApproval(){
+    if(state._permitApproved) return false;
+    const permits = state.categories.find(function(c){ return c.id === 'permits'; });
+    if(permits){
+      const p1 = permits.items.find(function(i){ return i.id === 'p1'; });
+      if(p1){
+        p1.status = 'done';
+        p1.detail = 'OBC 107.1 FULL APPROVAL — stamped 07/14/2026. Renovation can begin.';
+      }
+    }
+    state._permitApproved = true;
+    return true;
+  }
+
+  function marketingCategorySeed(){
+    return { id:'marketing', title:'Marketing & Pre-Opening', items:[
+      { id:'mk1', text:'Social media handles', detail:'Handle: @ridgeandroastcoffee — FB and IG complete; TikTok still to-do', status:'done', owner:'Abi/Mark/Kameron' },
+      { id:'mk2', text:'Website', detail:'ridgeandroastcoffee.com — logo complete, design underway. Kameron sent contract — needs review and sign-off.', status:'progress', owner:'Abi/Mark/Kameron' },
+      { id:'mk3', text:'Drink menu', detail:'Abi developing — check in on progress', status:'progress', owner:'Abi' },
+      { id:'mk4', text:'Hiring posts (social media)', detail:'~6 weeks before opening. County approval received 07/14/2026.', status:'done', owner:'Abi/Mark/DJ' },
+      { id:'mk5', text:'Promotional merch (pre-opening)', detail:'Stickers via stickermule.com + buttons, decals, tote bags, punch cards. Contact: Steve Sheeks.', status:'todo', owner:'Mark/Abi/Steve Sheeks' },
+      { id:'mk6', text:'Business phone number', detail:'333-800-0143', status:'done', owner:'' },
+      { id:'mk7', text:'Order sign', detail:'FastSigns — coordinate with DJ, Rob Kurtz, Mary Spaugy', status:'todo', owner:'DJ/Rob Kurtz/Mary Spaugy' },
+      { id:'mk8', text:'Summit County Health Dept — application & inspection', detail:'Owners: Abi & Mark. Required before opening.', status:'todo', owner:'Abi/Mark' }
+    ]};
+  }
+
+  function ensureMarketingCategory(){
+    const exists = state.categories.some(function(c){ return c.id === 'marketing'; });
+    if(!exists){ state.categories.push(marketingCategorySeed()); return true; }
+    return false;
+  }
+
+  function ensureItem(catId, item){
+    const cat = state.categories.find(function(c){ return c.id === catId; });
+    if(!cat) return false;
+    const exists = cat.items.some(function(i){ return i.id === item.id; });
+    if(!exists){ cat.items.push(item); return true; }
+    return false;
+  }
+
+  function ensureExtraItems(){
+    let changed = false;
+    if(ensureItem('permits', { id:'p6', text:'DBA registration', detail:'Trade name filed with Ohio Secretary of State — "Ridge & Roast Coffee Co."', status:'done' })) changed = true;
+    if(ensureItem('design', { id:'d8', text:'Furniture design — Mary Penney', detail:'Designer needs Pinterest board + architect floor plans/color scheme from Abi to begin', status:'todo' })) changed = true;
+    if(ensureItem('equipment', { id:'e10', text:'Akron Coffee Roasters — bean supplier', detail:'Albert (owner) — Abi to connect re: equipment order follow-up, bean delivery schedule, next steps. Timing TBD.', status:'todo' })) changed = true;
+    if(ensureItem('equipment', { id:'e11', text:'Confirm equipment delivery timelines', detail:'Check order confirmations for ship/delivery dates across all ordered equipment', status:'todo' })) changed = true;
+    return changed;
+  }
+
+  let state = null;
+
+  async function loadState(){
+    try{
+      const res = await window.storage.get(STORAGE_KEY, true);
+      if(res && res.value) return JSON.parse(res.value);
+    }catch(e){ /* not found yet */ }
+    return null;
+  }
+
+  async function saveState(){
+    try{
+      state.lastUpdated = Date.now();
+      const res = await window.storage.set(STORAGE_KEY, JSON.stringify(state), true);
+      if(!res) console.error('Storage set returned null');
+    }catch(e){ console.error('Storage error', e); }
+  }
+
+  function clone(o){ return JSON.parse(JSON.stringify(o)); }
+  function statusNext(s){ return s === 'todo' ? 'progress' : s === 'progress' ? 'done' : 'todo'; }
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, function(m){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'})[m];
+    });
+  }
+  function countAll(){
+    let total=0, done=0;
+    state.categories.forEach(function(c){
+      c.items.forEach(function(i){ total++; if(i.status==='done') done++; });
+    });
+    return { total: total, done: done };
+  }
+  function daysUntil(dateStr){
+    const target = new Date(dateStr + 'T00:00:00');
+    const now = new Date();
+    const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return Math.round((target - startToday) / 86400000);
+  }
+
+  function fmtMoney(n){
+    const num = Number(n) || 0;
+    const sign = num < 0 ? '-' : '';
+    return sign + '$' + Math.abs(num).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 });
+  }
+
+  function lineSpent(line){
+    return line.expenses.reduce(function(sum, e){ return sum + (Number(e.amount) || 0); }, 0);
+  }
+
+  function renderExpense(lineId, exp){
+    return '' +
+      '<div class="rr-expense-row">' +
+        '<span class="rr-expense-desc">' + escapeHtml(exp.desc) + '</span>' +
+        '<span class="rr-expense-amt">' + fmtMoney(exp.amount) + '</span>' +
+        '<button class="rr-del-btn" data-action="delete-expense" data-line="' + lineId + '" data-exp="' + exp.id + '" aria-label="Delete expense">&times;</button>' +
+      '</div>';
+  }
+
+  function renderBudgetLine(line){
+    const spent = lineSpent(line);
+    const pct = line.budgeted ? Math.min(spent / line.budgeted * 100, 100) : 0;
+    const over = spent > line.budgeted;
+    const remaining = line.budgeted - spent;
+    const isCollapsed = !!collapsed['budget-' + line.id];
+    return '' +
+      '<div class="rr-budget-line">' +
+        '<div class="rr-budget-line-head" data-action="toggle-budget-line" data-line="' + line.id + '">' +
+          '<div class="rr-budget-line-top">' +
+            '<span class="rr-budget-line-label">' + escapeHtml(line.label) + '</span>' +
+            '<span class="rr-budget-line-amt">' + fmtMoney(spent) + ' <span class="rr-budget-line-of">of ' + fmtMoney(line.budgeted) + '</span></span>' +
+          '</div>' +
+          '<div class="rr-budget-bar"><div class="rr-budget-bar-fill ' + (over ? 'rr-over' : '') + '" style="width:' + pct + '%"></div></div>' +
+          '<div class="rr-budget-line-bottom">' +
+            '<span class="' + (over ? 'rr-over-text' : 'rr-remaining-text') + '">' + (over ? fmtMoney(Math.abs(remaining)) + ' over budget' : fmtMoney(remaining) + ' left') + '</span>' +
+            '<span class="rr-chevron ' + (isCollapsed ? 'rr-collapsed' : '') + '">&#9662;</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="rr-budget-line-body ' + (isCollapsed ? 'rr-hidden' : '') + '">' +
+          line.expenses.map(function(e){ return renderExpense(line.id, e); }).join('') +
+          '<div class="rr-expense-add-row">' +
+            '<input type="text" placeholder="Description" data-exp-desc="' + line.id + '" />' +
+            '<input type="number" step="0.01" placeholder="$" data-exp-amt="' + line.id + '" />' +
+            '<button data-action="add-expense" data-line="' + line.id + '" aria-label="Add expense">+</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function renderBudget(){
+    const totalSpent = state.budget.lines.reduce(function(sum, l){ return sum + lineSpent(l); }, 0);
+    const totalBudget = state.budget.loanAmount;
+    const pct = totalBudget ? Math.min(totalSpent / totalBudget * 100, 100) : 0;
+    const over = totalSpent > totalBudget;
+    return '' +
+      '<div class="rr-budget-card">' +
+        '<div class="rr-budget-header">' +
+          '<div class="rr-budget-title">Budget Tracker</div>' +
+          '<div class="rr-budget-subtitle">' + fmtMoney(totalBudget) + ' note &middot; uses of funds</div>' +
+        '</div>' +
+        '<div class="rr-budget-summary">' +
+          '<div class="rr-budget-summary-num">' + fmtMoney(totalSpent) + '</div>' +
+          '<div class="rr-budget-summary-label">spent of ' + fmtMoney(totalBudget) + (over ? ' — over total budget' : '') + '</div>' +
+        '</div>' +
+        '<div class="rr-budget-bar rr-budget-bar-total"><div class="rr-budget-bar-fill ' + (over ? 'rr-over' : '') + '" style="width:' + pct + '%"></div></div>' +
+        '<div class="rr-budget-lines">' +
+          state.budget.lines.map(renderBudgetLine).join('') +
+        '</div>' +
+      '</div>';
+  }
+
+  function renderItem(catId, item){
+    const icon = item.status === 'done' ? '&#10003;' : item.status === 'progress' ? '&#8226;' : '';
+    const owner = item.owner || '';
+    const ownerHtml = '<div class="rr-item-owner" data-action="edit-owner" data-cat="' + catId + '" data-item="' + item.id + '" title="Click to edit owner">&#128100; ' + (owner ? escapeHtml(owner) : '<em style="opacity:0.5">add owner</em>') + '</div>';
+    return '' +
+      '<div class="rr-item ' + item.status + '">' +
+        '<button class="rr-status-btn" data-action="cycle" data-cat="' + catId + '" data-item="' + item.id + '" title="Click to change status" aria-label="Toggle status">' + icon + '</button>' +
+        '<div class="rr-item-text">' +
+          '<div class="rr-item-main">' + escapeHtml(item.text) + '</div>' +
+          (item.detail ? '<div class="rr-item-detail">' + escapeHtml(item.detail) + '</div>' : '') +
+          ownerHtml +
+        '</div>' +
+        '<button class="rr-del-btn" data-action="delete" data-cat="' + catId + '" data-item="' + item.id + '" aria-label="Delete item">&times;</button>' +
+      '</div>';
+  }
+
+  function renderCategory(cat){
+    const total = cat.items.length;
+    const done = cat.items.filter(function(i){ return i.status === 'done'; }).length;
+    const isCollapsed = !!collapsed[cat.id];
+    return '' +
+      '<div class="rr-card">' +
+        '<div class="rr-card-head" data-action="toggle-cat" data-cat="' + cat.id + '">' +
+          '<div class="rr-card-title">' + escapeHtml(cat.title) + '</div>' +
+          '<div class="rr-card-meta">' +
+            '<div class="rr-card-bar"><div class="rr-card-bar-fill" style="width:' + (total ? (done/total*100) : 0) + '%"></div></div>' +
+            '<span class="rr-card-frac">' + done + '/' + total + '</span>' +
+            '<span class="rr-chevron ' + (isCollapsed ? 'rr-collapsed' : '') + '">&#9662;</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="rr-card-body ' + (isCollapsed ? 'rr-hidden' : '') + '">' +
+          cat.items.map(function(item){ return renderItem(cat.id, item); }).join('') +
+          '<div class="rr-add-row">' +
+            '<input type="text" placeholder="Add an item…" data-add-input="' + cat.id + '" />' +
+            '<button data-action="add" data-cat="' + cat.id + '" aria-label="Add item">+</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function renderContacts(){
+    if(!state.contacts || !state.contacts.length) return '';
+    const rows = state.contacts.map(function(c){
+      const links = [];
+      if(c.phone) links.push('<a class="rr-contact-link" href="tel:' + c.phone.replace(/\D/g,'') + '">📞 ' + c.phone + '</a>');
+      if(c.email) links.push('<a class="rr-contact-link" href="mailto:' + escapeHtml(c.email) + '">✉ ' + escapeHtml(c.email) + '</a>');
+      return '' +
+        '<div class="rr-contact-row">' +
+          '<div class="rr-contact-name">' + escapeHtml(c.name) + '</div>' +
+          '<div class="rr-contact-role">' + escapeHtml(c.role) + '</div>' +
+          (links.length ? '<div class="rr-contact-links">' + links.join('') + '</div>' : '') +
+          (c.note ? '<div class="rr-contact-note">' + escapeHtml(c.note) + '</div>' : '') +
+        '</div>';
+    }).join('');
+    return '' +
+      '<div class="rr-contacts-card">' +
+        '<div class="rr-contacts-title">Contacts</div>' +
+        '<div class="rr-contacts-grid">' + rows + '</div>' +
+      '</div>';
+  }
+
+  function render(){
+    const counts = countAll();
+    const pct = counts.total ? Math.round(counts.done / counts.total * 100) : 0;
+    const days = daysUntil(state.targetOpenDate);
+
+    const cupTop = 40, cupBottom = 172;
+    const cupHeight = cupBottom - cupTop;
+    const fillHeight = cupHeight * pct / 100;
+    const fillY = cupBottom - fillHeight;
+    const cupPath = 'M30,40 L110,40 L100,165 Q100,172 93,172 L47,172 Q40,172 40,165 Z';
+
+    app.innerHTML = '' +
+      '<div class="rr-header">' +
+        '<div class="rr-brand-name">RIDGE &amp; ROAST <span>COFFEE CO.</span></div>' +
+        '<div class="rr-brand-sub">Project Tracker · 4014 State Road, Cuyahoga Falls, OH</div>' +
+        '<div class="rr-header-stats">' +
+          '<div>' +
+            '<div class="rr-countdown-num">' + Math.abs(days) + '</div>' +
+            '<div class="rr-countdown-label">' + (days >= 0 ? 'days to soft opening' : 'days past target') + '</div>' +
+            '<div class="rr-countdown-date">target: <input type="date" id="rr-target-date" value="' + state.targetOpenDate + '"></div>' +
+          '</div>' +
+          '<div class="rr-cup-wrap">' +
+            '<svg viewBox="0 0 140 180" class="rr-cup-svg">' +
+              '<defs>' +
+                '<linearGradient id="rrFillGrad" x1="0" y1="1" x2="0" y2="0">' +
+                  '<stop offset="0%" stop-color="#4A3326"/>' +
+                  '<stop offset="100%" stop-color="#C1622D"/>' +
+                '</linearGradient>' +
+                '<clipPath id="rrCupClip"><path d="' + cupPath + '"/></clipPath>' +
+              '</defs>' +
+              '<path d="' + cupPath + '" class="rr-cup-outline"/>' +
+              '<rect x="30" y="' + fillY + '" width="80" height="' + fillHeight + '" fill="url(#rrFillGrad)" clip-path="url(#rrCupClip)" class="rr-cup-fill"/>' +
+              (fillHeight > 2 ? '<rect x="30" y="' + fillY + '" width="80" height="3" fill="#C99A3E" clip-path="url(#rrCupClip)" class="rr-cup-crema"/>' : '') +
+              '<rect x="18" y="18" width="104" height="22" rx="11" class="rr-cup-lid"/>' +
+              '<ellipse cx="100" cy="29" rx="6" ry="3" class="rr-cup-hole"/>' +
+            '</svg>' +
+            '<div class="rr-cup-pct">' + pct + '%</div>' +
+            '<div class="rr-cup-label">' + counts.done + ' of ' + counts.total + ' tasks done</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      renderBudget() +
+      '<div class="rr-categories">' +
+        state.categories.map(renderCategory).join('') +
+      '</div>' +
+      renderContacts() +
+      '<div class="rr-footer">' +
+        '<span>' + (state.lastUpdated ? 'Saved ' + new Date(state.lastUpdated).toLocaleString() : 'Not yet saved') + '</span>' +
+        '<button class="rr-reset-btn" data-action="reset">Reset to starting checklist</button>' +
+      '</div>';
+
+    const dateInput = document.getElementById('rr-target-date');
+    if(dateInput){
+      dateInput.addEventListener('change', async function(e){
+        state.targetOpenDate = e.target.value;
+        await saveState();
+        render();
+      });
+    }
+  }
+
+  app.addEventListener('click', async function(e){
+    const target = e.target.closest('[data-action]');
+    if(!target) return;
+    const action = target.dataset.action;
+
+    if(action === 'cycle'){
+      const cat = state.categories.find(function(c){ return c.id === target.dataset.cat; });
+      const item = cat.items.find(function(i){ return i.id === target.dataset.item; });
+      item.status = statusNext(item.status);
+      await saveState(); render();
+    } else if(action === 'delete'){
+      const cat = state.categories.find(function(c){ return c.id === target.dataset.cat; });
+      cat.items = cat.items.filter(function(i){ return i.id !== target.dataset.item; });
+      await saveState(); render();
+    } else if(action === 'add'){
+      const catId = target.dataset.cat;
+      const input = app.querySelector('[data-add-input="' + catId + '"]');
+      const text = input.value.trim();
+      if(!text) return;
+      const cat = state.categories.find(function(c){ return c.id === catId; });
+      cat.items.push({ id:'item-' + Date.now() + '-' + Math.random().toString(36).slice(2,7), text: text, detail:'', status:'todo' });
+      await saveState(); render();
+    } else if(action === 'toggle-cat'){
+      collapsed[target.dataset.cat] = !collapsed[target.dataset.cat];
+      render();
+    } else if(action === 'toggle-budget-line'){
+      const key = 'budget-' + target.dataset.line;
+      collapsed[key] = !collapsed[key];
+      render();
+    } else if(action === 'add-expense'){
+      const lineId = target.dataset.line;
+      const descInput = app.querySelector('[data-exp-desc="' + lineId + '"]');
+      const amtInput = app.querySelector('[data-exp-amt="' + lineId + '"]');
+      const desc = descInput.value.trim();
+      const amt = parseFloat(amtInput.value);
+      if(!desc || isNaN(amt)) return;
+      const line = state.budget.lines.find(function(l){ return l.id === lineId; });
+      line.expenses.push({ id:'exp-' + Date.now() + '-' + Math.random().toString(36).slice(2,7), desc: desc, amount: amt });
+      await saveState(); render();
+    } else if(action === 'delete-expense'){
+      const lineId = target.dataset.line;
+      const line = state.budget.lines.find(function(l){ return l.id === lineId; });
+      line.expenses = line.expenses.filter(function(e){ return e.id !== target.dataset.exp; });
+      await saveState(); render();
+    } else if(action === 'edit-owner'){
+      const catId = target.dataset.cat;
+      const itemId = target.dataset.item;
+      const cat = state.categories.find(function(c){ return c.id === catId; });
+      const item = cat && cat.items.find(function(i){ return i.id === itemId; });
+      if(!item) return;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'rr-item-owner-input';
+      input.value = item.owner || '';
+      input.placeholder = 'Owner(s)';
+      target.replaceWith(input);
+      input.focus();
+      async function saveOwner(){
+        item.owner = input.value.trim();
+        await saveState();
+        render();
+      }
+      input.addEventListener('blur', saveOwner);
+      input.addEventListener('keydown', function(e){
+        if(e.key === 'Enter'){ e.preventDefault(); input.blur(); }
+        if(e.key === 'Escape'){ input.removeEventListener('blur', saveOwner); render(); }
+      });
+    } else if(action === 'reset'){
+      if(confirm('Reset the tracker to the starting checklist? This clears all changes you\'ve made, including budget entries.')){
+        state = defaultData();
+        await saveState(); render();
+      }
+    }
+  });
+
+  app.addEventListener('keydown', async function(e){
+    if(e.key === 'Enter' && e.target.matches('[data-add-input]')){
+      const catId = e.target.dataset.addInput;
+      const text = e.target.value.trim();
+      if(!text) return;
+      const cat = state.categories.find(function(c){ return c.id === catId; });
+      cat.items.push({ id:'item-' + Date.now() + '-' + Math.random().toString(36).slice(2,7), text: text, detail:'', status:'todo' });
+      await saveState(); render();
+    } else if(e.key === 'Enter' && (e.target.matches('[data-exp-desc]') || e.target.matches('[data-exp-amt]'))){
+      const lineId = e.target.dataset.expDesc || e.target.dataset.expAmt;
+      const descInput = app.querySelector('[data-exp-desc="' + lineId + '"]');
+      const amtInput = app.querySelector('[data-exp-amt="' + lineId + '"]');
+      const desc = descInput.value.trim();
+      const amt = parseFloat(amtInput.value);
+      if(!desc || isNaN(amt)) return;
+      const line = state.budget.lines.find(function(l){ return l.id === lineId; });
+      line.expenses.push({ id:'exp-' + Date.now() + '-' + Math.random().toString(36).slice(2,7), desc: desc, amount: amt });
+      await saveState(); render();
+    }
+  });
+
+  async function init(){
+    const loaded = await loadState();
+    let needsSave = false;
+    if(loaded){
+      state = loaded;
+      if(!state.budget){
+        state.budget = defaultBudget();
+        needsSave = true;
+      }
+    } else {
+      state = defaultData();
+      needsSave = true;
+    }
+    if(ensureEquipmentSeed()) needsSave = true;
+    if(applyEquipmentQtyUpdate()) needsSave = true;
+    if(ensureMarketingCategory()) needsSave = true;
+    if(ensureExtraItems()) needsSave = true;
+    if(applyPermitApproval()) needsSave = true;
+    if(applySpreadsheetUpdates()) needsSave = true;
+    if(ensureOwnerFields()) needsSave = true;
+    if(ensureContactsAndNewItems()) needsSave = true;
+    if(applyTitleAndItemUpdates()) needsSave = true;
+    if(applyPhoneUpdates()) needsSave = true;
+    if(applyOwnerPhoneUpdates()) needsSave = true;
+    if(applyOpenDateUpdate()) needsSave = true;
+    if(needsSave){ await saveState(); }
+    render();
+  }
+
+  init();
+})();
+</script>
